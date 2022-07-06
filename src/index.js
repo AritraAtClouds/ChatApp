@@ -12,6 +12,7 @@ const {
   removeUser,
   getUser,
   getUsersInRoom,
+  getAllRooms,
 } = require("./utils/users");
 const app = express();
 const server = http.createServer(app);
@@ -23,8 +24,16 @@ const publicDirectoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDirectoryPath));
 
 io.on("connection", (socket) => {
+  socket.emit("roomlist", getAllRooms());
   // console.log('New WebSocket connection')
-  socket.on("join", ({ username, room }, callback) => {
+  socket.on("join", ({ username, newroom, existingrooms }, callback) => {
+    if (!existingrooms && !newroom) {
+      return callback("No rooms selected/created");
+    }
+    let room = newroom;
+    if (existingrooms) {
+      room = existingrooms;
+    }
     const response = addUser({ id: socket.id, username, room });
     if (response.error) {
       return callback(response.error);

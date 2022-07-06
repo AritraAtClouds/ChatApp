@@ -6,15 +6,13 @@ const $messageFormInput = $messageForm.querySelector("input");
 const $messageFormButton = $messageForm.querySelector("button");
 const $sendLocationButton = document.querySelector("#send-location");
 const $messages = document.querySelector("#messages");
-
 // Templates
 const messageTemplate = document.querySelector("#message-template").innerHTML;
 const locationMessageTemplate = document.querySelector(
   "#location-message-template"
 ).innerHTML;
 const sidebarTemplate = document.querySelector("#sidebar-template").innerHTML;
-const { username, room } = Qs.parse(location.search.slice(1));
-
+const { username, newroom, existingrooms } = Qs.parse(location.search.slice(1));
 const autoscroll = () => {
   // New message element
   const $newMessage = $messages.lastElementChild;
@@ -95,7 +93,7 @@ $sendLocationButton.addEventListener("click", () => {
     );
   });
 });
-socket.emit("join", { username, room }, (err) => {
+socket.emit("join", { username, newroom, existingrooms }, (err) => {
   if (err) {
     location.href = "/";
     alert(err);
@@ -109,3 +107,5 @@ socket.on("roomData", ({ room, users }) => {
   });
   document.querySelector("#sidebar").innerHTML = html;
 });
+
+socket.on("roomllist", (rooms) => {});
